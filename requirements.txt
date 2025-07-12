@@ -1,0 +1,3 @@
+kivy
+google-genai
+python-dotenv
