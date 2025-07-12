@@ -72,8 +72,6 @@ class ChatApp(App):
             for chunk in chat.send_message_stream(user_message):
                 if chunk.text:
                     message += chunk.text
-                    print(message)
-                    print(chunk)
             self.add_message(f"[b]Gemini:[b] {message}")
         except Exception as e:
             self.add_message(f"[b]System:[b] Error getting response from Gemini: {e}")
