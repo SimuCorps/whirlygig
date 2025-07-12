@@ -1,6 +1,7 @@
 
 
 import os
+import traceback
 import kivy
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
@@ -11,7 +12,6 @@ from kivy.uix.label import Label
 from kivy.clock import Clock
 from dotenv import load_dotenv
 import google.genai as genai
-from functools import partial
 
 import tools
 import prompt
@@ -22,10 +22,26 @@ client = genai.Client()
 oneshot_config = genai.types.GenerateContentConfig(
     tools=[tools.get_file, tools.get_files_in_directory],
     thinking_config=genai.types.ThinkingConfig(thinking_budget=0)
-) 
+)
 
+# We make a wrapper function here, so that it has the config and client provided.
+# I tried using functools.partial, but that seemingly broke the automatic parsing.
+def new_agent(instructions: str, prompt: str):
+    """Create a new agent. They will be ran one-shot [i.e, they only get your instructions and prompt, then return.]
+    It may read files, but it cannot run commands.
+    The instructions default to being empty, so you should explain its purpose in the instructions, and then use the prompt for "user" input.
+    
+    Args:
+        instructions: The instructions for the agent.
+        prompt: The prompt for the agent.
+
+    Returns:
+        str: The response from the agent.
+    """
+    return tools.new_agent(client, oneshot_config, instructions, prompt)
+    
 chat_config = genai.types.GenerateContentConfig(
-    tools=[tools.get_file, tools.get_files_in_directory, partial(tools.new_agent, client, oneshot_config)],
+    tools=[tools.get_file, tools.get_files_in_directory, new_agent],
     thinking_config=genai.types.ThinkingConfig(thinking_budget=-1), # dynamic
     system_instruction=prompt.get_prompt()
 ) 
