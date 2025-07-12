@@ -1,3 +1,6 @@
+# Licensing notice:
+# Parts of the prompt were taken from https://github.com/google-gemini/gemini-cli/blob/main/packages/core/src/core/prompts.ts, which is licensed under the Apache 2 license.
+
 import platform
 import tools
 
@@ -14,7 +17,6 @@ def get_osname():
     elif system == "Windows":
         return f"Windows {platform.version()}"
     return system
-
 
 def get_prompt():
     return f"""
